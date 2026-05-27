@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#060812" />
+    <title>Aurora HomeScreen 2035</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell" aria-label="Futuristische Gaming-Konsole Home UI">
+      <div class="aurora-bg" aria-hidden="true">
+        <span class="orb orb-one"></span>
+        <span class="orb orb-two"></span>
+        <span class="orb orb-three"></span>
+        <span class="horizon"></span>
+      </div>
+
+      <header class="topbar glass-panel">
+        <a class="brand" href="#" aria-label="Aurora OS Startseite">
+          <span class="brand-mark"></span>
+          <span>Aurora OS</span>
+        </a>
+
+        <nav class="nav" aria-label="Hauptnavigation">
+          <button class="nav-item active" type="button">Home</button>
+          <button class="nav-item" type="button">Library</button>
+          <button class="nav-item" type="button">Pulse</button>
+          <button class="nav-item" type="button">Store</button>
+          <button class="nav-item" type="button">Social</button>
+        </nav>
+
+        <section class="status" aria-label="Statusleiste">
+          <span id="clock">21:35</span>
+          <span class="signal-dot" aria-label="Online"></span>
+          <span class="avatar">FT</span>
+        </section>
+      </header>
+
+      <section class="hero-grid">
+        <div class="headline">
+          <p class="eyebrow">Next-generation console experience</p>
+          <h1>Wähle dein nächstes Universum.</h1>
+          <p>
+            Eine originale, luxuriöse HomeScreen-Vision für 2035 – glassmorphism,
+            Tiefe, Neon-Licht und schnelle Interaktionen wie bei einer echten Konsole.
+          </p>
+        </div>
+
+        <aside class="now-playing glass-panel" aria-label="Aktuell ausgewähltes Spiel">
+          <div class="cover-stage">
+            <div class="featured-cover" id="featuredCover">
+              <div class="planet"></div>
+              <div class="ship"></div>
+              <div class="scan-lines"></div>
+            </div>
+          </div>
+
+          <div class="play-meta">
+            <span class="chip">Instant Resume</span>
+            <h2 id="featuredTitle">Nebula Drift</h2>
+            <p id="featuredDescription">Erkunde lautlose Städte aus Glas, lebendige Sternenfelder und einen Soundtrack, der auf deine Bewegung reagiert.</p>
+            <div class="action-row">
+              <button class="primary-action" type="button">Fortsetzen</button>
+              <button class="ghost-action" type="button">Details</button>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="carousel-wrap" aria-label="Fiktive Spiele">
+        <div class="section-title">
+          <div>
+            <p class="eyebrow">Featured worlds</p>
+            <h2>Schwebende Game-Cards</h2>
+          </div>
+          <span class="hint">← → oder Maus bewegen</span>
+        </div>
+
+        <div class="game-carousel" id="gameCarousel"></div>
+      </section>
+
+      <section class="dashboard-row" aria-label="Schnellzugriffe">
+        <article class="mini-card glass-panel">
+          <span class="mini-icon">△</span>
+          <div>
+            <h3>Tonight’s Quest</h3>
+            <p>Nebula Drift · 72% abgeschlossen</p>
+          </div>
+          <div class="progress"><span style="width: 72%"></span></div>
+        </article>
+
+        <article class="mini-card glass-panel">
+          <span class="mini-icon online">●</span>
+          <div>
+            <h3>Friends Online</h3>
+            <p>Mira, Onyx, Kade + 12 weitere</p>
+          </div>
+          <div class="progress"><span style="width: 48%"></span></div>
+        </article>
+
+        <article class="mini-card glass-panel">
+          <span class="mini-icon">◌</span>
+          <div>
+            <h3>Adaptive Audio</h3>
+            <p>Spatial Mix im Cinematic Mode</p>
+          </div>
+          <div class="progress"><span style="width: 88%"></span></div>
+        </article>
+
+        <article class="mini-card glass-panel">
+          <span class="mini-icon">✦</span>
+          <div>
+            <h3>Cloud Gallery</h3>
+            <p>18 Highlights bereit zum Teilen</p>
+          </div>
+          <div class="progress"><span style="width: 36%"></span></div>
+        </article>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
