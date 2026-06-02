@@ -1,252 +1,61 @@
 <!doctype html>
 <html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#050713" />
-    <title>Aurora HomeScreen 2035</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <div class="boot-screen" id="bootScreen" aria-label="Aurora Start Intro">
-      <div class="boot-rings" aria-hidden="true"></div>
-      <div class="boot-logo">
-        <span class="brand-mark mega"></span>
-        <strong>AURORA</strong>
-        <small>HomeSystem 2035</small>
-      </div>
-      <button class="boot-skip" id="enterButton" type="button">System starten</button>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aurora Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="clean-os.css?v=20260602-2">
+</head>
+<body>
+  <div class="boot" id="boot">
+    <div class="boot-box">
+      <div class="boot-logo"></div>
+      <h1>AURORA</h1>
+      <button class="primary" id="bootBtn">System starten</button>
     </div>
+  </div>
 
-    <main class="shell" aria-label="Futuristische Gaming-Konsole Home UI">
-      <div class="aurora-bg" aria-hidden="true">
-        <span class="orb orb-one"></span>
-        <span class="orb orb-two"></span>
-        <span class="orb orb-three"></span>
-        <span class="horizon"></span>
+  <section class="login hidden" id="login">
+    <header class="login-top">
+      <div class="console-logo">P6</div>
+      <div id="loginClock">16:07</div>
+    </header>
+    <div class="login-center">
+      <div class="login-title">
+        <b>Controller connected</b>
+        <span>Who is using this controller?</span>
       </div>
-
-      <header class="topbar glass-panel">
-        <button class="brand" type="button" data-view="home" aria-label="Aurora OS Startseite">
-          <span class="brand-mark"></span>
-          <span>Aurora OS</span>
-        </button>
-
-        <nav class="nav" aria-label="Hauptnavigation">
-          <button class="nav-item active" type="button" data-view="home">Home</button>
-          <button class="nav-item" type="button" data-view="library">Library</button>
-          <button class="nav-item" type="button" data-view="pulse">Pulse</button>
-          <button class="nav-item" type="button" data-view="store">Store</button>
-          <button class="nav-item" type="button" data-view="social">Social</button>
-          <button class="nav-item" type="button" data-view="studio">Studio</button>
-        </nav>
-
-        <section class="status" aria-label="Statusleiste">
-          <button class="icon-pill" id="searchButton" type="button" aria-label="Suche öffnen">⌕</button>
-          <span id="clock">21:35</span>
-          <span class="signal-dot" aria-label="Online"></span>
-          <button class="avatar" id="profileButton" type="button" aria-label="Profil bearbeiten"><span id="avatarText">FT</span><img id="avatarImage" alt="" /></button>
-        </section>
-      </header>
-
-      <section class="view active" id="view-home" aria-label="Home">
-        <section class="hero-grid">
-          <div class="headline">
-            <p class="eyebrow">Next-generation console experience</p>
-            <h1>Wähle dein nächstes Universum.</h1>
-            <p>
-              Eine originale, luxuriöse HomeScreen-Vision für 2035 – mit Start-Intro,
-              klickbaren Apps, Profil, Store, Library und eigenen Launch-Cinematics.
-            </p>
-          </div>
-
-          <aside class="now-playing glass-panel" aria-label="Aktuell ausgewähltes Spiel">
-            <div class="cover-stage">
-              <div class="featured-cover" id="featuredCover">
-                <div class="planet"></div>
-                <div class="ship"></div>
-                <div class="scan-lines"></div>
-              </div>
-            </div>
-
-            <div class="play-meta">
-              <span class="chip" id="featuredChip">Instant Resume</span>
-              <h2 id="featuredTitle">Nebula Drift</h2>
-              <p id="featuredDescription">Erkunde lautlose Städte aus Glas, lebendige Sternenfelder und einen Soundtrack, der auf deine Bewegung reagiert.</p>
-              <div class="action-row">
-                <button class="primary-action" id="playButton" type="button">Spiel starten</button>
-                <button class="ghost-action" id="detailsButton" type="button">Details</button>
-              </div>
-            </div>
-          </aside>
-        </section>
-
-        <section class="carousel-wrap" aria-label="Fiktive Spiele">
-          <div class="section-title">
-            <div>
-              <p class="eyebrow">Featured worlds</p>
-              <h2>Schwebende Game-Cards</h2>
-            </div>
-            <span class="hint">← → wechseln · Enter startet</span>
-          </div>
-
-          <div class="game-carousel" id="gameCarousel"></div>
-        </section>
-
-        <section class="dashboard-row" aria-label="Schnellzugriffe">
-          <button class="mini-card glass-panel" type="button" data-action="continue">
-            <span class="mini-icon">△</span>
-            <div>
-              <h3>Tonight’s Quest</h3>
-              <p id="questText">Nebula Drift · 72% abgeschlossen</p>
-            </div>
-            <div class="progress"><span style="width: 72%"></span></div>
-          </button>
-
-          <button class="mini-card glass-panel" type="button" data-view="social">
-            <span class="mini-icon online">●</span>
-            <div>
-              <h3>Friends Online</h3>
-              <p>Mira, Onyx, Kade + 12 weitere</p>
-            </div>
-            <div class="progress"><span style="width: 48%"></span></div>
-          </button>
-
-          <button class="mini-card glass-panel" type="button" data-view="studio">
-            <span class="mini-icon">◌</span>
-            <div>
-              <h3>Adaptive Audio</h3>
-              <p>Spatial Mix im Cinematic Mode</p>
-            </div>
-            <div class="progress"><span style="width: 88%"></span></div>
-          </button>
-
-          <button class="mini-card glass-panel" type="button" data-view="pulse">
-            <span class="mini-icon">✦</span>
-            <div>
-              <h3>Cloud Gallery</h3>
-              <p>18 Highlights bereit zum Teilen</p>
-            </div>
-            <div class="progress"><span style="width: 36%"></span></div>
-          </button>
-        </section>
-      </section>
-
-      <section class="view" id="view-library" aria-label="Library">
-        <div class="page-head">
-          <p class="eyebrow">Installed collection</p>
-          <h1>Library</h1>
-          <p>Alle fiktiven Spiele sind klickbar. Start öffnet pro Spiel ein eigenes Intro.</p>
-        </div>
-        <div class="library-grid" id="libraryGrid"></div>
-      </section>
-
-      <section class="view" id="view-store" aria-label="Store">
-        <div class="page-head">
-          <p class="eyebrow">Aurora Store</p>
-          <h1>Store</h1>
-          <p>Fiktiver Premium-Store mit Wunschliste, Vorschauen und Showcase-Karten.</p>
-        </div>
-        <div class="store-hero glass-panel">
-          <div>
-            <span class="chip">New this week</span>
-            <h2>Crystal Horizon</h2>
-            <p>Ein ruhiges Sci‑Fi-Abenteuer über fliegende Ozeane, Lichtarchitektur und adaptive Musik.</p>
-            <button class="primary-action" type="button" data-toast="Crystal Horizon wurde zur Wunschliste hinzugefügt.">Zur Wunschliste</button>
-          </div>
-          <div class="store-art"></div>
-        </div>
-        <div class="store-grid" id="storeGrid"></div>
-      </section>
-
-      <section class="view" id="view-pulse" aria-label="Pulse">
-        <div class="page-head">
-          <p class="eyebrow">Live feed</p>
-          <h1>Pulse</h1>
-          <p>News, Captures, Achievements und System-Highlights als interaktive Timeline.</p>
-        </div>
-        <div class="feed-list" id="pulseFeed"></div>
-      </section>
-
-      <section class="view" id="view-social" aria-label="Social">
-        <div class="page-head">
-          <p class="eyebrow">Connected players</p>
-          <h1>Social</h1>
-          <p>Freunde, Partys und Einladungen – alles klickbar als Demo.</p>
-        </div>
-        <div class="friends-grid" id="friendsGrid"></div>
-      </section>
-
-      <section class="view" id="view-studio" aria-label="Studio">
-        <div class="page-head">
-          <p class="eyebrow">Creative control</p>
-          <h1>Studio</h1>
-          <p>Audio, Captures und Interface-Modi für die Zukunftskonsole.</p>
-        </div>
-        <div class="settings-grid">
-          <button class="setting-card glass-panel" type="button" data-toast="Cinematic Audio aktiviert."><strong>Cinematic Audio</strong><span>3D Raumklang · Haptic Sync</span></button>
-          <button class="setting-card glass-panel" type="button" data-toast="Focus Mode aktiviert."><strong>Focus Mode</strong><span>Minimal HUD · weniger Benachrichtigungen</span></button>
-          <button class="setting-card glass-panel" type="button" data-toast="Cloud Capture vorbereitet."><strong>Cloud Capture</strong><span>Clips sofort teilen</span></button>
-          <button class="setting-card glass-panel" type="button" data-toast="Performance HUD eingeblendet."><strong>Performance HUD</strong><span>FPS · Latency · Network</span></button>
-        </div>
-      </section>
-    </main>
-
-    <dialog class="modal glass-panel" id="profileModal">
-      <form method="dialog" class="modal-content">
-        <button class="close" value="cancel" aria-label="Schließen">×</button>
-        <p class="eyebrow">Profile editor</p>
-        <h2>Profil bearbeiten</h2>
-        <div class="profile-editor">
-          <label class="upload-zone">
-            <input id="avatarUpload" type="file" accept="image/*" />
-            <span id="profilePreview" class="profile-preview">FT</span>
-            <strong>Bild hochladen</strong>
-            <small>Wird lokal im Browser angezeigt, kein Server nötig.</small>
-          </label>
-          <label>
-            Gamer-Name
-            <input id="profileName" type="text" value="Ferris" maxlength="18" />
-          </label>
-          <label>
-            Status
-            <textarea id="profileStatus" rows="3">Bereit für das nächste Universum.</textarea>
-          </label>
-        </div>
-        <menu class="action-row">
-          <button class="ghost-action" value="cancel">Abbrechen</button>
-          <button class="primary-action" id="saveProfile" value="default">Speichern</button>
-        </menu>
-      </form>
-    </dialog>
-
-    <dialog class="modal glass-panel" id="detailsModal">
-      <form method="dialog" class="modal-content">
-        <button class="close" value="cancel" aria-label="Schließen">×</button>
-        <p class="eyebrow">Game details</p>
-        <h2 id="detailsTitle">Nebula Drift</h2>
-        <p id="detailsText">Details</p>
-        <menu class="action-row">
-          <button class="primary-action" id="detailsPlay" value="cancel" type="button">Spiel starten</button>
-          <button class="ghost-action" value="cancel">Schließen</button>
-        </menu>
-      </form>
-    </dialog>
-
-    <div class="launch-overlay" id="launchOverlay" aria-live="polite">
-      <div class="launch-vortex" aria-hidden="true"></div>
-      <div class="launch-card">
-        <span class="launch-tag" id="launchTag">Aurora Launch Sequence</span>
-        <h2 id="launchTitle">Nebula Drift</h2>
-        <p id="launchSubtitle">Initialisiere Welt...</p>
-        <div class="launch-meter"><span id="launchMeter"></span></div>
+      <div class="user-stage">
+        <div class="users" id="users"></div>
+        <div class="users mirror-users" id="usersMirror"></div>
       </div>
     </div>
+  </section>
 
-    <div class="toast" id="toast" role="status"></div>
-    <script src="app.js"></script>
-  </body>
+  <main class="app" id="app"></main>
+
+  <section class="launch hidden" id="launch">
+    <div class="launch-box">
+      <p>Aurora Launch Sequence</p>
+      <h2 id="launchTitle">Game</h2>
+      <div class="loader"><i id="loadbar"></i></div>
+    </div>
+  </section>
+
+  <section class="game-player hidden" id="gamePlayer">
+    <header class="game-top">
+      <h2 id="gameTitle">Game</h2>
+      <div>
+        <a class="secondary" id="openTab" target="_blank" rel="noreferrer">Neuer Tab</a>
+        <button class="primary" id="closeGame">Home</button>
+      </div>
+    </header>
+    <iframe id="gameFrame" title="Game"></iframe>
+  </section>
+
+  <script src="clean-os.js?v=20260602-2"></script>
+</body>
 </html>
