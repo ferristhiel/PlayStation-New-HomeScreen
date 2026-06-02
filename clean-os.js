@@ -15,7 +15,7 @@
   ];
 
   const $ = (selector) => document.querySelector(selector);
-  const state = { selected: 2, view: 'home', storeFilter: 'Featured' };
+  const state = { selected: 2, view: 'home', storeFilter: 'Featured', spin: '' };
   const keys = {
     installed: 'aos-installed-v3', downloads: 'aos-downloads-v3', users: 'aos-users-v3',
     activeUser: 'aurora-console-active-user-v1', media: 'aos-media-v3', wish: 'aos-wish-v3',
@@ -55,19 +55,6 @@
     document.body.appendChild(node);
   }
   function closePanel() { document.querySelector('#panel')?.remove(); }
-
-  function boot() {
-    setInterval(() => {
-      const loginClock = $('#loginClock');
-      const live = $('#live');
-      if (loginClock) loginClock.textContent = now();
-      if (live) live.textContent = now();
-    }, 1000);
-    $('#loginClock').textContent = now();
-    renderUsers();
-    $('#bootBtn').addEventListener('click', () => showLogin());
-    setTimeout(() => showLogin(), 1300);
-  }
 
   function showLogin() {
     $('#boot').classList.add('hidden');
@@ -112,22 +99,35 @@
   function libraryItems() { return [...systemTiles, ...games.map((game) => ({ kind: 'game', ...game }))]; }
   function selectedItem() { return libraryItems()[state.selected] || libraryItems()[0]; }
 
-  function tile(item, index) {
-    const selected = index === state.selected;
+  function orderedItems() {
+    const items = libraryItems();
+    const radius = Math.floor(items.length / 2);
+    const result = [];
+    for (let offset = -radius; offset <= radius; offset += 1) {
+      const index = (state.selected + offset + items.length) % items.length;
+      result.push({ item: items[index], index, offset });
+    }
+    return result;
+  }
+
+  function tile(entry) {
+    const { item, index, offset } = entry;
+    const selected = offset === 0;
+    const side = offset < 0 ? 'left-side' : offset > 0 ? 'right-side' : 'center-side';
     if (item.kind === 'store' || item.kind === 'plus') {
-      return `<button class="tile round-tile ${selected ? 'sel' : ''}" data-index="${index}" style="--a:${item.a};--b:${item.b}"><span class="cover system-cover"><span class="sym">${item.icon}</span><h3 class="name">${item.title}</h3><span class="enter">Open</span></span></button>`;
+      return `<button class="tile round-tile ${selected ? 'sel' : ''} ${side}" data-index="${index}" data-offset="${offset}" style="--a:${item.a};--b:${item.b}"><span class="cover system-cover"><span class="sym">${item.icon}</span><h3 class="name">${item.title}</h3><span class="enter">Open</span></span></button>`;
     }
     const activeDownloads = downloads();
     const down = activeDownloads[item.id];
     const ready = isInstalled(item.id);
-    const classes = `${selected ? 'sel' : ''} ${!ready && !down ? 'locked' : ''} ${down ? 'down' : ''}`;
+    const classes = `${selected ? 'sel' : ''} ${!ready && !down ? 'locked' : ''} ${down ? 'down' : ''} ${side}`;
     const symbol = ready ? '▶' : down ? '⬇' : '▣';
     const progress = down ? `<span class="bar" style="--p:${down.progress}%"><i></i></span>` : `<span class="enter">${ready ? 'Start' : item.price ? 'Buy' : 'Free'}</span>`;
-    return `<button class="tile ${classes}" data-index="${index}" style="--a:${item.a};--b:${item.b}"><span class="cover"><span class="sym">${symbol}</span><h3 class="name">${item.title}</h3>${progress}</span></button>`;
+    return `<button class="tile ${classes}" data-index="${index}" data-offset="${offset}" style="--a:${item.a};--b:${item.b}"><span class="cover"><span class="sym">${symbol}</span><h3 class="name">${item.title}</h3>${progress}</span></button>`;
   }
 
   function renderHome() {
-    const items = libraryItems();
+    state.view = 'home';
     const item = selectedItem();
     const activeDownloads = downloads();
     let description = item.sub;
@@ -138,7 +138,17 @@
       description = ready ? item.sub : down ? `Download ${down.progress}% · ${Math.round(item.mb * (1 - down.progress / 100))} MB übrig` : item.price ? `${item.price.toFixed(2)} € · Store` : `Free Download · ${item.mb} MB`;
       action = ready ? 'Spiel starten' : down ? 'Status' : item.price ? 'Kaufen' : 'Free Download';
     }
-    $('#app').innerHTML = `${topbar()}<section class="main"><div class="welcome"><h1>Welcome</h1><p>△○×□</p></div><div class="shelf"><div class="row">${items.map(tile).join('')}</div><div class="mirror">${items.map(tile).join('')}</div><div class="meta"><h2>${item.title}</h2><p>${description}</p><button data-action="open-selected">${action}</button> <button class="secondary" data-action="info">Infos</button></div></div></section>`;
+    const tiles = orderedItems().map(tile).join('');
+    $('#app').innerHTML = `${topbar()}<section class="main"><div class="welcome"><h1>Welcome</h1><p>△○×□</p></div><div class="shelf ${state.spin}"><div class="row rotating-row">${tiles}</div><div class="mirror rotating-row">${tiles}</div><div class="meta"><h2>${item.title}</h2><p>${description}</p><button data-action="open-selected">${action}</button> <button class="secondary" data-action="info">Infos</button></div></div></section>`;
+    window.clearTimeout(renderHome.spinTimer);
+    renderHome.spinTimer = window.setTimeout(() => { state.spin = ''; document.querySelector('.shelf')?.classList.remove('spin-left', 'spin-right'); }, 260);
+  }
+
+  function rotate(direction) {
+    const total = libraryItems().length;
+    state.selected = (state.selected + direction + total) % total;
+    state.spin = direction > 0 ? 'spin-right' : 'spin-left';
+    renderHome();
   }
 
   function renderStore(mode = 'Featured') {
@@ -165,7 +175,7 @@
 
   function renderSettings() {
     state.view = 'settings';
-    $('#app').innerHTML = `${topbar()}<section class="main"><div class="welcome"><h1>Settings</h1><p>SYSTEM / CONTROL</p></div><div class="grid"><div class="card"><h2>Clean Hintergrund</h2><p>${document.body.classList.contains('dark') ? 'Dunkel animiert' : 'Grau clean'}</p><button data-action="theme">Umschalten</button></div><div class="card"><h2>Controller & Tasten</h2><div class="control-grid"><div class="control-key"><span>← / →</span><b>Auswahl</b></div><div class="control-key"><span>Enter</span><b>Start</b></div><div class="control-key"><span>F</span><b>Screenshot</b></div><div class="control-key"><span>Esc</span><b>Zurück</b></div></div></div><div class="card"><h2>Downloads</h2><p>Status und Speicher ansehen.</p><button data-action="status">Öffnen</button></div></div></section>`;
+    $('#app').innerHTML = `${topbar()}<section class="main"><div class="welcome"><h1>Settings</h1><p>SYSTEM / CONTROL</p></div><div class="grid"><div class="card"><h2>Clean Hintergrund</h2><p>${document.body.classList.contains('dark') ? 'Dunkel animiert' : 'Grau clean'}</p><button data-action="theme">Umschalten</button></div><div class="card"><h2>Tastatur / Logitech iPad</h2><div class="control-grid"><div class="control-key"><span>← / A / J</span><b>Links rotieren</b></div><div class="control-key"><span>→ / D / L</span><b>Rechts rotieren</b></div><div class="control-key"><span>Enter / Space</span><b>Öffnen / Start</b></div><div class="control-key"><span>F</span><b>Screenshot</b></div><div class="control-key"><span>Esc / H</span><b>Home</b></div><div class="control-key"><span>Tab</span><b>Browser-Fokus</b></div></div></div><div class="card"><h2>Downloads</h2><p>Status und Speicher ansehen.</p><button data-action="status">Öffnen</button></div></div></section>`;
   }
 
   function renderPlus() {
@@ -250,7 +260,7 @@
 
   function handleClick(event) {
     const userButton = event.target.closest('[data-user-index]'); if (userButton) return;
-    const indexButton = event.target.closest('[data-index]'); if (indexButton) { const index = Number(indexButton.dataset.index); if (index === state.selected) openSelected(); else { state.selected = index; state.view = 'home'; renderHome(); } return; }
+    const indexButton = event.target.closest('[data-index]'); if (indexButton) { const index = Number(indexButton.dataset.index); if (index === state.selected) openSelected(); else { state.selected = index; state.spin = index > state.selected ? 'spin-right' : 'spin-left'; renderHome(); } return; }
     const filterButton = event.target.closest('[data-store-filter]'); if (filterButton) { renderStore(filterButton.dataset.storeFilter); return; }
     const buy = event.target.closest('[data-buy]'); if (buy) { startDownload(games.find((g) => g.id === buy.dataset.buy)); return; }
     const wish = event.target.closest('[data-wish]'); if (wish) { const value = read(keys.wish, {}); value[wish.dataset.wish] = !value[wish.dataset.wish]; write(keys.wish, value); renderStore(state.storeFilter); return; }
@@ -276,11 +286,12 @@
     $('#bootBtn').addEventListener('click', showLogin);
     $('#closeGame').addEventListener('click', () => { $('#gamePlayer').classList.add('hidden'); $('#gameFrame').src = 'about:blank'; });
     window.addEventListener('keydown', (event) => {
-      if (event.key === 'ArrowRight') { state.selected = (state.selected + 1) % libraryItems().length; state.view = 'home'; renderHome(); }
-      if (event.key === 'ArrowLeft') { state.selected = (state.selected - 1 + libraryItems().length) % libraryItems().length; state.view = 'home'; renderHome(); }
-      if (event.key === 'Enter') openSelected();
-      if (event.key.toLowerCase() === 'f') takeShot();
-      if (event.key === 'Escape') { closePanel(); state.view = 'home'; renderHome(); }
+      const key = event.key.toLowerCase();
+      if (['arrowright', 'd', 'l'].includes(key)) { event.preventDefault(); rotate(1); }
+      if (['arrowleft', 'a', 'j'].includes(key)) { event.preventDefault(); rotate(-1); }
+      if (['enter', ' '].includes(event.key.toLowerCase()) || event.code === 'Space') { event.preventDefault(); openSelected(); }
+      if (key === 'f') takeShot();
+      if (key === 'escape' || key === 'h') { closePanel(); state.view = 'home'; renderHome(); }
     });
     setInterval(() => { const live = $('#live'); const clock = $('#loginClock'); if (live) live.textContent = now(); if (clock) clock.textContent = now(); }, 1000);
     $('#loginClock').textContent = now(); renderUsers(); renderHome(); setTimeout(showLogin, 1300);
