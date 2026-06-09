@@ -7,19 +7,25 @@ const REDIRECT_URI = `${window.location.origin}${window.location.pathname}`
 const TOKEN_KEY = 'aurora.spotify.token.v3'
 const VERIFIER_KEY = 'aurora.spotify.verifier.v3'
 
-const initialGames = [
-  { id: 'spider1', title: 'Spider-Man', tag: 'Action', accentA: '#07111f', accentB: '#1f2937' },
-  { id: 'reddead', title: 'Red Dead Redemption III', tag: 'Adventure', accentA: '#dc2626', accentB: '#f59e0b' },
-  { id: 'ferris', title: 'Ferris Game', tag: 'Installed', url: 'https://ferristhiel.github.io/Game/', repo: 'https://github.com/ferristhiel/Game.git', accentA: '#2f3035', accentB: '#111827' },
-  { id: 'last1', title: 'The Last of Us', tag: 'Story', accentA: '#b77948', accentB: '#262626' },
-  { id: 'last2', title: 'The Last of Us Part II', tag: 'Story', accentA: '#111827', accentB: '#374151' },
-  { id: 'fc27', title: 'FC 27', tag: 'Sports', accentA: '#f97316', accentB: '#7c2d12' },
-  { id: 'spider3', title: 'Spider-Man 3', tag: 'Action', accentA: '#dc2626', accentB: '#7f1d1d' },
-  { id: 'gta', title: 'Grand Theft Auto', tag: 'Open World', accentA: '#7c3aed', accentB: '#fb7185' },
-  { id: 'cyber', title: 'Cyberpunk 2', tag: 'RPG', accentA: '#facc15', accentB: '#fde047' },
+const appTiles = [
+  { id: 'store', type: 'app', title: 'Store', tag: 'Aurora App', accentA: '#eef2ff', accentB: '#ffffff' },
+  { id: 'library', type: 'app', title: 'Library', tag: 'Collection', accentA: '#dbeafe', accentB: '#f8fafc' },
+  { id: 'photos', type: 'app', title: 'Aurora Photos', tag: 'Media', accentA: '#fef3c7', accentB: '#f8fafc' },
 ]
 
-const navItems = ['Media', 'Library', 'All', 'Settings', 'Store']
+const games = [
+  { id: 'spider1', type: 'game', title: 'Spider-Man', tag: 'Action', accentA: '#07111f', accentB: '#1f2937' },
+  { id: 'reddead', type: 'game', title: 'Red Dead Redemption III', tag: 'Adventure', accentA: '#dc2626', accentB: '#f59e0b' },
+  { id: 'ferris', type: 'game', title: 'Ferris Game', tag: 'Installed', url: 'https://ferristhiel.github.io/Game/', repo: 'https://github.com/ferristhiel/Game.git', accentA: '#2f3035', accentB: '#111827' },
+  { id: 'last1', type: 'game', title: 'The Last of Us', tag: 'Story', accentA: '#b77948', accentB: '#262626' },
+  { id: 'last2', type: 'game', title: 'The Last of Us Part II', tag: 'Story', accentA: '#111827', accentB: '#374151' },
+  { id: 'fc27', type: 'game', title: 'FC 27', tag: 'Sports', accentA: '#f97316', accentB: '#7c2d12' },
+  { id: 'spider3', type: 'game', title: 'Spider-Man 3', tag: 'Action', accentA: '#dc2626', accentB: '#7f1d1d' },
+  { id: 'gta', type: 'game', title: 'Grand Theft Auto', tag: 'Open World', accentA: '#7c3aed', accentB: '#fb7185' },
+  { id: 'cyber', type: 'game', title: 'Cyberpunk 2', tag: 'RPG', accentA: '#facc15', accentB: '#fde047' },
+]
+
+const carouselItems = [...appTiles, ...games]
 
 function readJson(key, fallback) {
   try {
@@ -86,10 +92,21 @@ function LoginScreen({ onLogin }) {
   )
 }
 
+function SystemStatus() {
+  const time = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+  return (
+    <div className="system-status">
+      <span className="status-time">{time}</span>
+      <span className="signal-bars" aria-label="WiFi signal"><i /><i /><i /></span>
+      <span className="battery"><i /></span>
+    </div>
+  )
+}
+
 function MusicWidget({ spotify, onConnect, onCommand }) {
   const track = spotify.track
   const title = track?.item?.name || 'Spotify Music'
-  const artist = track?.item?.artists?.map(artistItem => artistItem.name).join(', ') || (spotify.connected ? 'No active playback' : 'Connect Spotify')
+  const artist = track?.item?.artists?.map(item => item.name).join(', ') || (spotify.connected ? 'No active playback' : 'Connect Spotify')
   const progress = track?.progress_ms && track?.item?.duration_ms ? Math.min(100, Math.round((track.progress_ms / track.item.duration_ms) * 100)) : 0
   const playing = track?.is_playing
 
@@ -111,56 +128,60 @@ function MusicWidget({ spotify, onConnect, onCommand }) {
   )
 }
 
-function TopBar({ view, setView, spotify, onSpotifyConnect, onSpotifyCommand }) {
+function TopBar({ setView, spotify, onSpotifyConnect, onSpotifyCommand }) {
   return (
     <header className="topbar-console">
-      <div className="status-left"><span>12:07</span><span>WiFi</span><span>Pad</span><span>Bell 16</span><span>Info</span><span>Trophy</span></div>
-      <nav className="main-nav">
-        {navItems.map(item => <button key={item} className={view === item ? 'active' : ''} onClick={() => setView(item)}>{item}</button>)}
-      </nav>
-      <div className="status-right"><MusicWidget spotify={spotify} onConnect={onSpotifyConnect} onCommand={onSpotifyCommand} /><span className="profile"><span>FT</span>Chri-TV</span></div>
+      <SystemStatus />
+      <MusicWidget spotify={spotify} onConnect={onSpotifyConnect} onCommand={onSpotifyCommand} />
+      <div className="user-actions">
+        <button className="profile-button" onClick={() => setView('Library')}><span>FT</span><b>Chri-TV</b></button>
+        <button className="settings-button" onClick={() => setView('Settings')}>Settings</button>
+      </div>
     </header>
   )
 }
 
-function orderedGames(selectedIndex) {
-  const radius = Math.floor(initialGames.length / 2)
+function orderedItems(selectedIndex) {
+  const radius = Math.floor(carouselItems.length / 2)
   const result = []
   for (let offset = -radius; offset <= radius; offset += 1) {
-    const index = (selectedIndex + offset + initialGames.length) % initialGames.length
-    result.push({ game: initialGames[index], index, offset })
+    const index = (selectedIndex + offset + carouselItems.length) % carouselItems.length
+    result.push({ item: carouselItems[index], index, offset })
   }
   return result
 }
 
-function GameTile({ game, index, offset, onSelect }) {
+function Tile({ item, index, offset, onSelect }) {
   const klass = offset === 0 ? 'selected' : Math.abs(offset) === 1 ? 'near' : Math.abs(offset) === 2 ? 'secondary' : 'compact'
   return (
-    <button className={`game-card ${klass}`} onClick={() => onSelect(index)} style={{ '--a': game.accentA, '--b': game.accentB }}>
-      <div className="game-cover"><span>{game.title.slice(0, 2).toUpperCase()}</span></div>
-      <div className="game-label">{offset === 0 ? 'Enter' : game.title}</div>
+    <button className={`game-card ${klass} ${item.type === 'app' ? 'app-card' : ''}`} onClick={() => onSelect(index)} style={{ '--a': item.accentA, '--b': item.accentB }}>
+      <div className="game-cover"><span>{item.title.slice(0, 2).toUpperCase()}</span></div>
+      <div className="game-label">{offset === 0 ? 'Enter' : item.title}</div>
     </button>
   )
 }
 
-function HomeScreen({ view, setView, installed, setInstalled, spotify, onSpotifyConnect, onSpotifyCommand }) {
-  const [selectedIndex, setSelectedIndex] = useState(2)
+function HomeScreen({ setView, installed, setInstalled, spotify, onSpotifyConnect, onSpotifyCommand }) {
+  const [selectedIndex, setSelectedIndex] = useState(5)
   const [player, setPlayer] = useState(null)
-  const selected = initialGames[selectedIndex]
-  const ordered = useMemo(() => orderedGames(selectedIndex), [selectedIndex])
+  const selected = carouselItems[selectedIndex]
+  const ordered = useMemo(() => orderedItems(selectedIndex), [selectedIndex])
 
   useEffect(() => {
     const handle = (event) => {
-      if (view !== 'All') return
-      if (event.key === 'ArrowRight') setSelectedIndex(value => (value + 1) % initialGames.length)
-      if (event.key === 'ArrowLeft') setSelectedIndex(value => (value - 1 + initialGames.length) % initialGames.length)
+      if (event.key === 'ArrowRight') setSelectedIndex(value => (value + 1) % carouselItems.length)
+      if (event.key === 'ArrowLeft') setSelectedIndex(value => (value - 1 + carouselItems.length) % carouselItems.length)
       if (event.key === 'Enter') openSelected()
     }
     window.addEventListener('keydown', handle)
     return () => window.removeEventListener('keydown', handle)
-  }, [view, selectedIndex, installed])
+  }, [selectedIndex, installed])
 
   function openSelected() {
+    if (selected.id === 'store') return setView('Store')
+    if (selected.id === 'library') return setView('Library')
+    if (selected.id === 'photos') return setView('Photos')
+    if (selected.id === 'settings') return setView('Settings')
     if (installed[selected.id] && selected.url) setPlayer(selected)
     else setInstalled(next => ({ ...next, [selected.id]: true }))
   }
@@ -168,19 +189,19 @@ function HomeScreen({ view, setView, installed, setInstalled, spotify, onSpotify
   return (
     <main className="home-screen">
       <div className="soft-bg" />
-      <TopBar view={view} setView={setView} spotify={spotify} onSpotifyConnect={onSpotifyConnect} onSpotifyCommand={onSpotifyCommand} />
+      <TopBar setView={setView} spotify={spotify} onSpotifyConnect={onSpotifyConnect} onSpotifyCommand={onSpotifyCommand} />
       <section className="welcome-block"><h1>Welcome</h1><p>△○×□</p></section>
       <section className="game-shelf moving-shelf">
-        {ordered.map(({ game, index, offset }) => <GameTile key={`${game.id}-${offset}`} game={game} index={index} offset={offset} onSelect={(next) => next === selectedIndex ? openSelected() : setSelectedIndex(next)} />)}
+        {ordered.map(({ item, index, offset }) => <Tile key={`${item.id}-${offset}`} item={item} index={index} offset={offset} onSelect={(next) => next === selectedIndex ? openSelected() : setSelectedIndex(next)} />)}
       </section>
       <section className="reflection-shelf moving-shelf">
-        {ordered.map(({ game, index, offset }) => <GameTile key={`${game.id}-${offset}-mirror`} game={game} index={index} offset={offset} onSelect={() => {}} />)}
+        {ordered.map(({ item, index, offset }) => <Tile key={`${item.id}-${offset}-mirror`} item={item} index={index} offset={offset} onSelect={() => {}} />)}
       </section>
       <div className="floor-fade" />
       <section className="selection-panel">
         <h2>{selected.title}</h2>
-        <p>{selected.tag} · {installed[selected.id] ? 'Ready to play' : 'Available in Store'}</p>
-        <Button onClick={openSelected}>{installed[selected.id] ? 'Start' : 'Install'}</Button>
+        <p>{selected.tag} · {selected.type === 'app' ? 'Open application' : installed[selected.id] ? 'Ready to play' : 'Available in Store'}</p>
+        <Button onClick={openSelected}>{selected.type === 'app' ? 'Open' : installed[selected.id] ? 'Start' : 'Install'}</Button>
         <Button className="secondary">Details</Button>
       </section>
       {player && <section className="player"><header><h2>{player.title}</h2><div><a className="button secondary" href={player.url} target="_blank" rel="noreferrer">Open Tab</a><Button onClick={() => setPlayer(null)}>Close</Button></div></header><iframe src={player.url} title={player.title} /></section>}
@@ -188,7 +209,7 @@ function HomeScreen({ view, setView, installed, setInstalled, spotify, onSpotify
   )
 }
 
-function StoreScreen({ view, setView, installed, setInstalled, spotify, onSpotifyConnect, onSpotifyCommand }) {
+function StoreScreen({ setView, installed, setInstalled, spotify, onSpotifyConnect, onSpotifyCommand }) {
   const [wishlist, setWishlist] = useState(() => readJson('aurora.wishlist.react', {}))
   const [cart, setCart] = useState(() => readJson('aurora.cart.react', {}))
   const [checkout, setCheckout] = useState(null)
@@ -205,11 +226,11 @@ function StoreScreen({ view, setView, installed, setInstalled, spotify, onSpotif
   return (
     <main className="home-screen store-mode">
       <div className="soft-bg" />
-      <TopBar view={view} setView={setView} spotify={spotify} onSpotifyConnect={onSpotifyConnect} onSpotifyCommand={onSpotifyCommand} />
+      <TopBar setView={setView} spotify={spotify} onSpotifyConnect={onSpotifyConnect} onSpotifyCommand={onSpotifyCommand} />
       <section className="store-wrap">
         <div className="store-hero"><div><span>Featured Store</span><h1>Aurora Store</h1><p>Install games, manage wishlist and cart, and keep the console interface clean.</p></div><div className="store-actions-top"><Button>Wishlist {Object.values(wishlist).filter(Boolean).length}</Button><Button className="secondary">Cart {Object.values(cart).filter(Boolean).length}</Button></div></div>
         <div className="store-grid">
-          {initialGames.map(game => <article className="store-card" key={game.id} style={{ '--a': game.accentA, '--b': game.accentB }}><div className="store-cover"><span>{game.title.slice(0, 2).toUpperCase()}</span></div><h2>{game.title}</h2><p>{game.tag}</p><div className="store-actions"><Button onClick={() => setCheckout(game)}>{installed[game.id] ? 'Reinstall' : 'Install'}</Button><Button className="secondary" onClick={() => setWishlist(next => ({ ...next, [game.id]: true }))}>Wishlist</Button><Button className="secondary" onClick={() => setCart(next => ({ ...next, [game.id]: true }))}>Cart</Button></div></article>)}
+          {games.map(game => <article className="store-card" key={game.id} style={{ '--a': game.accentA, '--b': game.accentB }}><div className="store-cover"><span>{game.title.slice(0, 2).toUpperCase()}</span></div><h2>{game.title}</h2><p>{game.tag}</p><div className="store-actions"><Button onClick={() => setCheckout(game)}>{installed[game.id] ? 'Reinstall' : 'Install'}</Button><Button className="secondary" onClick={() => setWishlist(next => ({ ...next, [game.id]: true }))}>Wishlist</Button><Button className="secondary" onClick={() => setCart(next => ({ ...next, [game.id]: true }))}>Cart</Button></div></article>)}
         </div>
       </section>
       {checkout && <div className="modal-backdrop" onClick={() => setCheckout(null)}><section className="checkout-modal" onClick={event => event.stopPropagation()}><span>Checkout</span><h2>{checkout.title}</h2><p>{checkout.tag} · Free</p><div><Button onClick={() => install(checkout)}>Confirm Install</Button><Button className="secondary" onClick={() => setCheckout(null)}>Cancel</Button></div></section></div>}
@@ -217,12 +238,17 @@ function StoreScreen({ view, setView, installed, setInstalled, spotify, onSpotif
   )
 }
 
-function SpotifyScreen({ view, setView, spotify, onSpotifyConnect, onSpotifyCommand }) {
-  return <main className="home-screen"><div className="soft-bg" /><TopBar view={view} setView={setView} spotify={spotify} onSpotifyConnect={onSpotifyConnect} onSpotifyCommand={onSpotifyCommand} /><section className="store-wrap"><div className="store-hero"><div><span>Spotify</span><h1>Console Music</h1><p>Spotify is connected through your Client ID and PKCE. Use the music widget in the top bar to control playback.</p></div><Button onClick={onSpotifyConnect}>{spotify.connected ? 'Reconnect Spotify' : 'Connect Spotify'}</Button></div></section></main>
+function LibraryScreen({ setView, installed, spotify, onSpotifyConnect, onSpotifyCommand }) {
+  const installedGames = games.filter(game => installed[game.id])
+  return <main className="home-screen"><div className="soft-bg" /><TopBar setView={setView} spotify={spotify} onSpotifyConnect={onSpotifyConnect} onSpotifyCommand={onSpotifyCommand} /><section className="store-wrap"><div className="store-hero"><div><span>Library</span><h1>Your Games</h1><p>All installed Aurora games are collected here.</p></div><Button onClick={() => setView('All')}>Back Home</Button></div><div className="store-grid">{installedGames.map(game => <article className="store-card" key={game.id} style={{ '--a': game.accentA, '--b': game.accentB }}><div className="store-cover"><span>{game.title.slice(0, 2).toUpperCase()}</span></div><h2>{game.title}</h2><p>{game.tag}</p></article>)}</div></section></main>
 }
 
-function SettingsScreen({ view, setView, spotify, onSpotifyConnect, onSpotifyCommand }) {
-  return <main className="home-screen"><div className="soft-bg" /><TopBar view={view} setView={setView} spotify={spotify} onSpotifyConnect={onSpotifyConnect} onSpotifyCommand={onSpotifyCommand} /><section className="store-wrap"><div className="store-hero"><div><span>System</span><h1>Settings</h1><p>Controls, storage, account, controller support and system settings.</p></div></div></section></main>
+function PhotosScreen({ setView, spotify, onSpotifyConnect, onSpotifyCommand }) {
+  return <main className="home-screen"><div className="soft-bg" /><TopBar setView={setView} spotify={spotify} onSpotifyConnect={onSpotifyConnect} onSpotifyCommand={onSpotifyCommand} /><section className="store-wrap"><div className="store-hero"><div><span>Aurora Photos</span><h1>Media Gallery</h1><p>A clean place for screenshots, captures and future console memories.</p></div><Button onClick={() => setView('All')}>Back Home</Button></div><div className="photo-grid"><section>Screenshot Preview</section><section>Capture Album</section><section>Shared Moments</section></div></section></main>
+}
+
+function SettingsScreen({ setView, spotify, onSpotifyConnect, onSpotifyCommand }) {
+  return <main className="home-screen"><div className="soft-bg" /><TopBar setView={setView} spotify={spotify} onSpotifyConnect={onSpotifyConnect} onSpotifyCommand={onSpotifyCommand} /><section className="store-wrap"><div className="store-hero"><div><span>System</span><h1>Settings</h1><p>Controls, storage, account, controller support and system settings.</p></div><Button onClick={() => setView('All')}>Back Home</Button></div></section></main>
 }
 
 function App() {
@@ -288,10 +314,11 @@ function App() {
   }
 
   if (!loggedIn) return <LoginScreen onLogin={() => setLoggedIn(true)} />
-  if (view === 'Store') return <StoreScreen view={view} setView={setView} installed={installed} setInstalled={setInstalled} spotify={spotify} onSpotifyConnect={connectSpotify} onSpotifyCommand={spotifyCommand} />
-  if (view === 'Settings') return <SettingsScreen view={view} setView={setView} spotify={spotify} onSpotifyConnect={connectSpotify} onSpotifyCommand={spotifyCommand} />
-  if (view === 'Media') return <SpotifyScreen view={view} setView={setView} spotify={spotify} onSpotifyConnect={connectSpotify} onSpotifyCommand={spotifyCommand} />
-  return <HomeScreen view={view} setView={setView} installed={installed} setInstalled={setInstalled} spotify={spotify} onSpotifyConnect={connectSpotify} onSpotifyCommand={spotifyCommand} />
+  if (view === 'Store') return <StoreScreen setView={setView} installed={installed} setInstalled={setInstalled} spotify={spotify} onSpotifyConnect={connectSpotify} onSpotifyCommand={spotifyCommand} />
+  if (view === 'Library') return <LibraryScreen setView={setView} installed={installed} spotify={spotify} onSpotifyConnect={connectSpotify} onSpotifyCommand={spotifyCommand} />
+  if (view === 'Photos') return <PhotosScreen setView={setView} spotify={spotify} onSpotifyConnect={connectSpotify} onSpotifyCommand={spotifyCommand} />
+  if (view === 'Settings') return <SettingsScreen setView={setView} spotify={spotify} onSpotifyConnect={connectSpotify} onSpotifyCommand={spotifyCommand} />
+  return <HomeScreen setView={setView} installed={installed} setInstalled={setInstalled} spotify={spotify} onSpotifyConnect={connectSpotify} onSpotifyCommand={spotifyCommand} />
 }
 
 createRoot(document.getElementById('root')).render(<App />)
