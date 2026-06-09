@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles.css'
+import './ux-fixes.css'
 
 const SPOTIFY_CLIENT_ID = 'd06ce2e44ce944c18f421e373e2b086a'
 const REDIRECT_URI = `${window.location.origin}${window.location.pathname}`
