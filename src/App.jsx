@@ -1,12 +1,11 @@
-import{useState}from'react'
-
 export default function App(){
- const[view,setView]=useState('home')
- const cards=['Store','Photos','Spider','Ferris','FC27']
  return <main>
-  <header className="topbar">
-   <button className="status" onClick={()=>setView('home')}>H 19:30</button>
-   <div className="music">Spotify Music</div>
-   <button className="right" onClick={()=>setView('settings')}>Settings</button>
-  </header>
-  {view==='settings'?<section className="settings"><h1>Settings
+  <h1>Aurora Console</h1>
+  <section className="shelf">
+   <div className="tile">Store</div>
+   <div className="tile">Photos</div>
+   <div className="tile">Ferris</div>
+  </section>
+  <section className="panel">Start Ferris Game</section>
+ </main>
+}
