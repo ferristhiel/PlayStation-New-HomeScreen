@@ -1,8 +1,14 @@
-import React,{useState}from'react'
-import{createRoot}from'react-dom/client'
+import React from 'react'
+import { createRoot } from 'react-dom/client'
+import './styles/base.css'
 
-const games=['Store','Library','Aurora Photos','Spider-Man','Red Dead III','Ferris Game','FC 27','Cyberpunk 2']
-const users=['Create User','Chri-TV','moreCHRI-TV','Guest']
-
-function Style(){return <style>{`
-*{box-sizing:border-box}html,body,#root{margin:0;width:100%;height:100%;font-family:Inter,system-ui,Arial,sans-serif;color:#10131a}body{overflow:hidden;background:#f3efe6}.app{min-height:100vh;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 18%,#fffdf7 0,#f4efe3 38%,#e8edf3 100%)}button{font:inherit;
+function App() {
+  const items = ['Store','Library','Photos','Spider','Ferris','FC27']
+  return (
+    <main className="app">
+      <header className="top">
+        <div className="left">12:07 ))) H</div>
+        <div className="music">Spotify Player · Connect</div>
+        <div className="right">FT Settings</div>
+      </header>
+      <section className="hero
